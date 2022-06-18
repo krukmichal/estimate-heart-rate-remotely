@@ -62,7 +62,9 @@ def band_pass(fft, freqs, freq_min, freq_max):
     fft[high:] = 0
     return fft
     
-def calc_heart_rate(fft, freqs, freq_min, freq_max):
+def calc_heart_rate(fft, freqs):
+    print(fft.shape)
+    print(fft)
     print("calculating heart rate")
     fft_maxes = []
     for i in range(fft.shape[0]):
@@ -89,12 +91,12 @@ def convert_frames_to_laplacian_pyramid_sequence(frames):
     return lps
 
 def main():
-    f = "videos/mk.mp4"
+    f = "videos/mk1.mp4"
     frames, fps = video_to_face_frames(f)
     lps = convert_frames_to_laplacian_pyramid_sequence(frames)    
     fft, freqs = calc_abs_fft(lps, fps)
-    fft = band_pass(fft, freqs, 1, 3) 
-    heart_rate = calc_heart_rate(fft, freqs, 1, 3)
+    fft = band_pass(fft, freqs, 1.1, 3) 
+    heart_rate = calc_heart_rate(fft, freqs)
     print("estimated heart rate: " + str(heart_rate))
 
 if __name__ == "__main__":
