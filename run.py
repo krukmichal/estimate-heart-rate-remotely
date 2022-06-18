@@ -1,4 +1,3 @@
-from scipy import signal
 import cv2
 import numpy as np
 import scipy.fftpack as fftpack
@@ -70,14 +69,14 @@ def calc_heart_rate(fft, freqs, freq_min, freq_max):
     for i in range(fft.shape[0]):
         fft_maxes.append(fft[i].max())
 
-    tested_frequencies, _ = signal.find_peaks(fft_maxes) 
-    freq_max = 0
-    result_frequency = 0
-    for freq in tested_frequencies:
-        if fft_maxes[freq] > freq_max:
-            freq_max = fft_maxes[freq]
-            result_frequency = 60*freqs[freq]
-    return result_frequency
+    tmp_val = 0
+    max_amplitude_index = 0
+    for i in range(len(fft_maxes)):
+        if fft_maxes[i] > tmp_val:
+            tmp_val = fft_maxes[i]
+            max_amplitude_index = i
+
+    return 60*freqs[max_amplitude_index]
 
 
 def convert_frames_to_laplacian_pyramid_sequence(frames):
@@ -91,7 +90,7 @@ def convert_frames_to_laplacian_pyramid_sequence(frames):
     return lps
 
 def main():
-    f = "videos/mk.mp4"
+    f = "videos/face.mp4"
     frames, fps = video_to_face_frames(f)
     lps = convert_frames_to_laplacian_pyramid_sequence(frames)    
     fft, freqs = calc_abs_fft(lps, fps)
