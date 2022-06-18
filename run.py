@@ -63,8 +63,6 @@ def band_pass(fft, freqs, freq_min, freq_max):
     return fft
     
 def calc_heart_rate(fft, freqs):
-    print(fft.shape)
-    print(fft)
     print("calculating heart rate")
     fft_maxes = []
     for i in range(fft.shape[0]):
