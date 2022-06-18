@@ -4,18 +4,6 @@ import numpy as np
 import scipy.fftpack as fftpack
 import matplotlib.pyplot as plt
 
-
-def find_face(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    face_rects = faceCascade.detectMultiScale(gray, 1.3, 5)
-    for (x, y, w, h) in face_rects:
-        roi_frame = img[y:y + h, x:x + w]
-    if roi_frame.size != img.size:
-        roi_frame = cv2.resize(roi_frame, (500, 500))
-
-    return roi_frame
-
-
 def g_pyramid(img, levels):
     img_temp = img.copy()
     pyramid = [img_temp]
@@ -80,25 +68,29 @@ def band_pass(fft, freqs, freq_min, freq_max):
     fft[bound_high:] = 0
     return fft
     
-def find_heart_rate(fft, freqs, freq_min, freq_max):
+def calc_heart_rate(fft, freqs, freq_min, freq_max):
     print("calculating heart rate")
-    fft_maximums = []
+    fft_maxes = []
 
     for i in range(fft.shape[0]):
         if freq_min <= freqs[i] <= freq_max:
-            fft_maximums.append(fft[i].max())
+            fft_maxes.append(fft[i].max())
         else:
-            fft_maximums.append(0)
-
-    peaks, properties = signal.find_peaks(fft_maximums)
+            fft_maxes.append(0)
+    
+    print(fft_maxes)
+    peaks, _ = signal.find_peaks(fft_maxes)
+    print(peaks)
     max_peak = -1
     max_freq = 0
 
     for peak in peaks:
-        if fft_maximums[peak] > max_freq:
-            max_freq = fft_maximums[peak]
+        if fft_maxes[peak] > max_freq:
+            max_freq = fft_maxes[peak]
             max_peak = peak
 
+    print(max_peak)
+    print(freqs)
     return freqs[max_peak] * 60
 
 
@@ -121,7 +113,7 @@ def main():
     fft, freqs = calc_abs_fft(lps, fps)
     fft = band_pass(fft, freqs, 1, 2.2) 
 
-    heart_rate = find_heart_rate(fft, freqs, 1, 2.2)
+    heart_rate = calc_heart_rate(fft, freqs, 1, 2.2)
     print("estimated heart rate: " + str(heart_rate))
 
 if __name__ == "__main__":
