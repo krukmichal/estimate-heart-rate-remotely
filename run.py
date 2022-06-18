@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import scipy.fftpack as fftpack
-import matplotlib.pyplot as plt
 
 def g_pyramid(img, lvl):
     pyramid = [img]
@@ -90,7 +89,7 @@ def convert_frames_to_laplacian_pyramid_sequence(frames):
     return lps
 
 def main():
-    f = "videos/face.mp4"
+    f = "videos/mk.mp4"
     frames, fps = video_to_face_frames(f)
     lps = convert_frames_to_laplacian_pyramid_sequence(frames)    
     fft, freqs = calc_abs_fft(lps, fps)
